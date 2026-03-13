@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import api from '../services/api';
-import { useCart } from '../context/CartContext';
+import { createOrder } from '../redux/slices/orderSlice';
+import { clearCart } from '../redux/slices/cartSlice';
 import AnimatedPage from '../components/AnimatedPage';
 
 export default function Checkout() {
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { items: cartItems } = useSelector(state => state.cart);
+  const { loading } = useSelector(state => state.orders);
+
+  const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const [form, setForm] = useState({
     fullName: '',
     address: '',
@@ -25,26 +29,17 @@ export default function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      // Sync cart to server before placing order
-      for (const item of cartItems) {
-        await api.post('/cart', {
-          productId: item._id,
-          quantity: item.quantity,
-        });
-      }
-      const { data } = await api.post('/orders', {
-        shippingAddress: form,
-        paymentMethod: 'COD',
-      });
-      clearCart();
+    const result = await dispatch(createOrder({
+      shippingAddress: form,
+      paymentMethod: 'COD',
+    }));
+    if (createOrder.fulfilled.match(result)) {
+      dispatch(clearCart());
       toast.success('Order placed successfully!');
-      navigate(`/order-success/${data._id}`);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Error placing order');
+      navigate(`/order-success/${result.payload._id}`);
+    } else {
+      toast.error(result.payload || 'Error placing order');
     }
-    setLoading(false);
   };
 
   const fields = [

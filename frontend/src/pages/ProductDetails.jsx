@@ -1,41 +1,39 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { HiStar, HiOutlineHeart, HiMinus, HiPlus } from 'react-icons/hi';
 import { toast } from 'react-toastify';
 import api from '../services/api';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
+import { fetchProductDetails } from '../redux/slices/productSlice';
+import { addToCart } from '../redux/slices/cartSlice';
 import { DetailSkeleton } from '../components/ui/LoadingSkeleton';
 import AnimatedPage from '../components/AnimatedPage';
 
 export default function ProductDetails() {
   const { id } = useParams();
-  const { addToCart } = useCart();
-  const { user } = useAuth();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state.auth);
+  const { product, loading } = useSelector(state => state.products);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [reviewData, setReviewData] = useState({ rating: 5, comment: '' });
 
   useEffect(() => {
-    api
-      .get(`/products/${id}`)
-      .then(({ data }) => {
-        setProduct(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [id]);
+    dispatch(fetchProductDetails(id));
+  }, [dispatch, id]);
 
   const handleAddReview = async (e) => {
     e.preventDefault();
     try {
-      await api.post(`/products/${id}/reviews`, reviewData);
+      const token = user?.token;
+      const config = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : undefined;
+
+      await api.post(`/products/${id}/reviews`, reviewData, config);
       toast.success('Review added!');
-      const { data } = await api.get(`/products/${id}`);
-      setProduct(data);
+      dispatch(fetchProductDetails(id));
       setReviewData({ rating: 5, comment: '' });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error adding review');
@@ -157,7 +155,7 @@ export default function ProductDetails() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => addToCart(product, quantity)}
+                onClick={() => dispatch(addToCart({ productId: product._id, quantity }))}
                 disabled={product.stock === 0}
                 className="btn-primary flex-grow disabled:opacity-50"
               >

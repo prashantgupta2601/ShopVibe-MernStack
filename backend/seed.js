@@ -12,6 +12,7 @@ const products = [
       'Premium noise-cancelling wireless headphones with 30-hour battery life, comfortable over-ear design, and crystal-clear audio quality.',
     price: 149.99,
     category: 'Electronics',
+    brand: 'Sony',
     images: [
       'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop',
     ],
@@ -25,6 +26,7 @@ const products = [
       'Advanced smartwatch with health monitoring, GPS tracking, water resistance, and a stunning AMOLED display. Stay connected on the go.',
     price: 299.99,
     category: 'Electronics',
+    brand: 'Apple',
     images: [
       'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop',
     ],
@@ -38,6 +40,7 @@ const products = [
       'Sleek and functional backpack with laptop compartment, water-resistant fabric, and ergonomic design. Ideal for daily commute and travel.',
     price: 79.99,
     category: 'Clothing',
+    brand: 'Nike',
     images: [
       'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&h=500&fit=crop',
     ],

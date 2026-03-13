@@ -1,25 +1,19 @@
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { HiOutlineShoppingBag, HiOutlineUser } from 'react-icons/hi';
-import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { fetchMyOrders } from '../redux/slices/orderSlice';
 import AnimatedPage from '../components/AnimatedPage';
 
 export default function Dashboard() {
-  const { user } = useAuth();
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state.auth);
+  const { orders, loading } = useSelector(state => state.orders);
   const [tab, setTab] = useState('orders');
 
   useEffect(() => {
-    api
-      .get('/orders')
-      .then(({ data }) => {
-        setOrders(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+    dispatch(fetchMyOrders());
+  }, [dispatch]);
 
   const statusColor = (status) => {
     const colors = {

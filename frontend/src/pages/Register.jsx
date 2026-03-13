@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { useAuth } from '../context/AuthContext';
+import { register } from '../redux/slices/authSlice';
 import AnimatedPage from '../components/AnimatedPage';
 
 export default function Register() {
@@ -10,9 +11,9 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading } = useSelector(state => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,15 +21,13 @@ export default function Register() {
       toast.error('Passwords do not match');
       return;
     }
-    setLoading(true);
-    try {
-      await register(name, email, password);
+    const result = await dispatch(register({ name, email, password }));
+    if (register.fulfilled.match(result)) {
       toast.success('Account created successfully!');
       navigate('/');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+    } else {
+      toast.error(result.payload || 'Registration failed');
     }
-    setLoading(false);
   };
 
   return (

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   HiOutlineTrash,
@@ -6,11 +7,27 @@ import {
   HiPlus,
   HiOutlineShoppingCart,
 } from 'react-icons/hi';
-import { useCart } from '../context/CartContext';
+import { removeFromCart, updateCartItem, fetchCart } from '../redux/slices/cartSlice';
 import AnimatedPage from '../components/AnimatedPage';
 
 export default function Cart() {
-  const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const dispatch = useDispatch();
+  const { items: cartItems, loading } = useSelector(state => state.cart);
+
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + (item.product?.price ?? 0) * item.quantity,
+    0
+  );
+
+  const handleRemove = (productId) => {
+    dispatch(removeFromCart(productId));
+  };
+
+  const handleUpdateQuantity = (productId, quantity) => {
+    if (quantity > 0) {
+      dispatch(updateCartItem({ productId, quantity }));
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -52,27 +69,27 @@ export default function Cart() {
                 >
                   <img
                     src={
-                      item.images?.[0] ||
+                      item.product?.images?.[0] ||
                       'https://via.placeholder.com/120x120'
                     }
-                    alt={item.name}
+                    alt={item.product?.name || 'Product image'}
                     className="w-24 h-24 object-cover rounded-lg"
                   />
                   <div className="flex-grow">
                     <Link
-                      to={`/products/${item._id}`}
+                      to={`/products/${item.product?._id}`}
                       className="font-semibold hover:text-primary-600 transition-colors"
                     >
-                      {item.name}
+                      {item.product?.name}
                     </Link>
                     <p className="text-primary-600 dark:text-primary-400 font-bold mt-1">
-                      ${item.price.toFixed(2)}
+                      ${item.product?.price?.toFixed(2)}
                     </p>
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                         <button
                           onClick={() =>
-                            updateQuantity(item._id, item.quantity - 1)
+                            handleUpdateQuantity(item.product?._id, item.quantity - 1)
                           }
                           className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-lg"
                         >
@@ -83,7 +100,7 @@ export default function Cart() {
                         </span>
                         <button
                           onClick={() =>
-                            updateQuantity(item._id, item.quantity + 1)
+                            handleUpdateQuantity(item.product?._id, item.quantity + 1)
                           }
                           className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg"
                         >
@@ -92,12 +109,12 @@ export default function Cart() {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="font-bold">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ${((item.product?.price ?? 0) * item.quantity).toFixed(2)}
                         </span>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          onClick={() => removeFromCart(item._id)}
+                          onClick={() => handleRemove(item.product?._id)}
                           className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg"
                         >
                           <HiOutlineTrash className="w-5 h-5" />

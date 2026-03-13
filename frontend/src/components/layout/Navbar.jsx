@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   HiOutlineShoppingCart,
@@ -11,27 +12,22 @@ import {
   HiOutlineSun,
   HiOutlineMoon,
 } from 'react-icons/hi';
-import { useAuth } from '../../context/AuthContext';
-import { useCart } from '../../context/CartContext';
-import { useTheme } from '../../context/ThemeContext';
+import { logout } from '../../redux/slices/authSlice';
+import SearchBar from '../SearchBar';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const { user, logout } = useAuth();
-  const { cartCount } = useCart();
-  const { darkMode, toggleDarkMode } = useTheme();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector(state => state.auth);
+  const { items: cartItems } = useSelector(state => state.cart);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-      setSearchOpen(false);
-    }
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/');
   };
 
   return (
@@ -62,39 +58,7 @@ export default function Navbar() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <AnimatePresence>
-              {searchOpen ? (
-                <motion.form
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 250, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  onSubmit={handleSearch}
-                  className="overflow-hidden"
-                >
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search products..."
-                    className="input-field text-sm py-1.5"
-                    autoFocus
-                    onBlur={() => !searchQuery && setSearchOpen(false)}
-                  />
-                </motion.form>
-              ) : (
-                <IconButton onClick={() => setSearchOpen(true)}>
-                  <HiOutlineSearch className="w-5 h-5" />
-                </IconButton>
-              )}
-            </AnimatePresence>
-
-            <IconButton onClick={toggleDarkMode}>
-              {darkMode ? (
-                <HiOutlineSun className="w-5 h-5" />
-              ) : (
-                <HiOutlineMoon className="w-5 h-5" />
-              )}
-            </IconButton>
+            <SearchBar />
 
             {user && (
               <Link to="/wishlist">
@@ -159,9 +123,8 @@ export default function Navbar() {
                         )}
                         <button
                           onClick={() => {
-                            logout();
+                            handleLogout();
                             setUserMenuOpen(false);
-                            navigate('/');
                           }}
                           className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
@@ -187,13 +150,6 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-3">
-            <IconButton onClick={toggleDarkMode}>
-              {darkMode ? (
-                <HiOutlineSun className="w-5 h-5" />
-              ) : (
-                <HiOutlineMoon className="w-5 h-5" />
-              )}
-            </IconButton>
             <Link to="/cart" className="relative">
               <IconButton>
                 <HiOutlineShoppingCart className="w-5 h-5" />
@@ -225,15 +181,9 @@ export default function Navbar() {
             className="md:hidden overflow-hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700"
           >
             <div className="px-4 py-3 space-y-2">
-              <form onSubmit={handleSearch} className="mb-3">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products..."
-                  className="input-field text-sm"
-                />
-              </form>
+              <div className="mb-3">
+                <SearchBar />
+              </div>
               <MobileNavLink to="/" onClick={() => setIsOpen(false)}>
                 Home
               </MobileNavLink>
@@ -261,9 +211,8 @@ export default function Navbar() {
               {user ? (
                 <button
                   onClick={() => {
-                    logout();
+                    handleLogout();
                     setIsOpen(false);
-                    navigate('/');
                   }}
                   className="w-full text-left py-2 text-red-600 font-medium"
                 >

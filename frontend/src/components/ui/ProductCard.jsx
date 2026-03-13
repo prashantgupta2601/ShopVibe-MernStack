@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
 import {
   HiOutlineHeart,
@@ -6,14 +7,14 @@ import {
   HiOutlineShoppingCart,
   HiStar,
 } from 'react-icons/hi';
-import { useCart } from '../../context/CartContext';
+import { addToCart } from '../../redux/slices/cartSlice';
 
 export default function ProductCard({
   product,
   isWishlisted,
   onToggleWishlist,
 }) {
-  const { addToCart } = useCart();
+  const dispatch = useDispatch();
 
   return (
     <motion.div
@@ -92,7 +93,7 @@ export default function ProductCard({
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => addToCart(product)}
+              onClick={() => dispatch(addToCart({ productId: product._id, quantity: 1 }))}
               disabled={product.stock === 0}
               className="p-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >

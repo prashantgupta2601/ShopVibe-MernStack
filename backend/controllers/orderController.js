@@ -98,6 +98,7 @@ exports.updateOrderStatus = async (req, res) => {
     if (paymentStatus) order.paymentStatus = paymentStatus;
 
     await order.save();
+
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });

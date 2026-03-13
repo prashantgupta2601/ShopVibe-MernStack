@@ -1,28 +1,27 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { useAuth } from '../context/AuthContext';
+import { login } from '../redux/slices/authSlice';
 import AnimatedPage from '../components/AnimatedPage';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading, error } = useSelector(state => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await login(email, password);
+    const result = await dispatch(login({ email, password }));
+    if (login.fulfilled.match(result)) {
       toast.success('Welcome back!');
       navigate('/');
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+    } else {
+      toast.error(result.payload || 'Login failed');
     }
-    setLoading(false);
   };
 
   return (
