@@ -35,6 +35,7 @@ app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/inventory', require('./routes/inventoryRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
 
 app.get('/', (req, res) => {
   res.json({ message: 'MERN E-Commerce API is running' });
