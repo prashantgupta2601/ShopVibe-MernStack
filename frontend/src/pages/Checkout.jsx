@@ -24,6 +24,8 @@ export default function Checkout() {
     phone: '',
   });
 
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('COD');
+
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -31,12 +33,16 @@ export default function Checkout() {
     e.preventDefault();
     const result = await dispatch(createOrder({
       shippingAddress: form,
-      paymentMethod: 'COD',
+      paymentMethod: selectedPaymentMethod,
     }));
     if (createOrder.fulfilled.match(result)) {
       dispatch(clearCart());
-      toast.success('Order placed successfully!');
-      navigate(`/order-success/${result.payload._id}`);
+      if (selectedPaymentMethod === 'stripe') {
+        navigate(`/payment/${result.payload._id}`);
+      } else {
+        toast.success('Order placed successfully!');
+        navigate(`/order-success/${result.payload._id}`);
+      }
     } else {
       toast.error(result.payload || 'Error placing order');
     }
@@ -86,20 +92,40 @@ export default function Checkout() {
 
               <div className="card p-6 mt-6">
                 <h2 className="text-xl font-bold mb-4">Payment Method</h2>
-                <label className="flex items-center gap-3 p-4 border border-primary-600 rounded-lg bg-primary-50 dark:bg-primary-900/20">
-                  <input
-                    type="radio"
-                    checked
-                    readOnly
-                    className="accent-primary-600"
-                  />
-                  <div>
-                    <p className="font-medium">Cash on Delivery</p>
-                    <p className="text-sm text-gray-500">
-                      Pay when you receive your order
-                    </p>
-                  </div>
-                </label>
+                <div className="space-y-4">
+                  <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer ${selectedPaymentMethod === 'COD' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-gray-700'}`}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="COD"
+                      checked={selectedPaymentMethod === 'COD'}
+                      onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                      className="accent-primary-600"
+                    />
+                    <div>
+                      <p className="font-medium">Cash on Delivery</p>
+                      <p className="text-sm text-gray-500">
+                        Pay when you receive your order
+                      </p>
+                    </div>
+                  </label>
+                  <label className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer ${selectedPaymentMethod === 'stripe' ? 'border-primary-600 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-gray-700'}`}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="stripe"
+                      checked={selectedPaymentMethod === 'stripe'}
+                      onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                      className="accent-primary-600"
+                    />
+                    <div>
+                      <p className="font-medium">Credit/Debit Card (Stripe)</p>
+                      <p className="text-sm text-gray-500">
+                        Pay securely with your card
+                      </p>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -141,7 +167,7 @@ export default function Checkout() {
                 disabled={loading || cartItems.length === 0}
                 className="btn-primary w-full mt-6 disabled:opacity-50"
               >
-                {loading ? 'Placing Order...' : 'Place Order'}
+                {loading ? 'Processing...' : (selectedPaymentMethod === 'stripe' ? 'Proceed to Payment' : 'Place Order')}
               </motion.button>
             </div>
           </div>
