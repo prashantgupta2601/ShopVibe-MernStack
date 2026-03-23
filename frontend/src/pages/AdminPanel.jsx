@@ -215,7 +215,7 @@ export default function AdminPanel() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="card p-6 border-l-4 border-blue-500">
                 <p className="text-gray-500 text-sm">Total Revenue</p>
-                <p className="text-2xl font-bold">${dashboardStats.totalRevenue.toFixed(2)}</p>
+                <p className="text-2xl font-bold">₹{dashboardStats.totalRevenue.toFixed(2)}</p>
               </div>
               <div className="card p-6 border-l-4 border-green-500">
                 <p className="text-gray-500 text-sm">Total Orders</p>
@@ -242,7 +242,7 @@ export default function AdminPanel() {
                       <YAxis />
                       <Tooltip />
                       <Legend />
-                      <Bar dataKey="revenue" fill="#0088FE" name="Revenue ($)" />
+                      <Bar dataKey="revenue" fill="#0088FE" name="Revenue (₹)" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -315,7 +315,7 @@ export default function AdminPanel() {
                       <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required className="input-field" rows={3} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Price ($)</label>
+                      <label className="block text-sm font-medium mb-1">Price (₹)</label>
                       <input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required className="input-field" />
                     </div>
                     <div>
@@ -351,7 +351,7 @@ export default function AdminPanel() {
                       <img src={product.images?.[0] || 'https://via.placeholder.com/60'} alt="" className="w-12 h-12 rounded-lg object-cover" />
                       <div>
                         <p className="font-medium">{product.name}</p>
-                        <p className="text-sm text-gray-500">${product.price.toFixed(2)} &middot; Stock: {product.stock}</p>
+                        <p className="text-sm text-gray-500">₹{product.price.toFixed(2)} &middot; Stock: {product.stock}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -382,7 +382,7 @@ export default function AdminPanel() {
                       <p className="text-sm text-gray-400">{new Date(order.createdAt).toLocaleString()}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-lg">${order.totalPrice.toFixed(2)}</p>
+                      <p className="font-bold text-lg">₹{order.totalPrice.toFixed(2)}</p>
                       <select
                         value={order.orderStatus}
                         onChange={(e) => updateOrderStatus(order._id, e.target.value)}

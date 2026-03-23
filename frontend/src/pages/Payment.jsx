@@ -47,7 +47,7 @@ const CheckoutForm = ({ orderId, amount }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement />
       <button disabled={!stripe || loading} className="btn-primary w-full disabled:opacity-50">
-        {loading ? 'Processing...' : `Pay $${amount.toFixed(2)}`}
+        {loading ? 'Processing...' : `Pay ₹${amount.toFixed(2)}`}
       </button>
     </form>
   );
@@ -94,7 +94,7 @@ export default function Payment() {
         <h1 className="text-3xl font-bold mb-8 text-center">Complete Payment</h1>
         <div className="card p-8">
           <p className="text-gray-600 mb-6 text-center">
-            You are paying for Order #{id.substring(0, 8)} - Total: ${orderDetails.totalPrice.toFixed(2)}
+            You are paying for Order #{id.substring(0, 8)} - Total: ₹{orderDetails.totalPrice.toFixed(2)}
           </p>
           <Elements stripe={stripePromise} options={{ clientSecret }}>
             <CheckoutForm orderId={id} amount={orderDetails.totalPrice} />

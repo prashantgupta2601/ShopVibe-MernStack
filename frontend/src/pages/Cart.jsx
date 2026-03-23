@@ -83,7 +83,7 @@ export default function Cart() {
                       {item.product?.name}
                     </Link>
                     <p className="text-primary-600 dark:text-primary-400 font-bold mt-1">
-                      ${item.product?.price?.toFixed(2)}
+                      ₹{item.product?.price?.toFixed(2)}
                     </p>
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
@@ -109,7 +109,7 @@ export default function Cart() {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="font-bold">
-                          ${((item.product?.price ?? 0) * item.quantity).toFixed(2)}
+                          ₹{((item.product?.price ?? 0) * item.quantity).toFixed(2)}
                         </span>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
@@ -141,7 +141,7 @@ export default function Cart() {
                   Subtotal (
                   {cartItems.reduce((s, i) => s + i.quantity, 0)} items)
                 </span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>₹{cartTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Shipping</span>

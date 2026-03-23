@@ -23,7 +23,7 @@ const categories = [
 ];
 
 const features = [
-  { icon: HiTruck, title: 'Free Shipping', desc: 'On orders over $50' },
+  { icon: HiTruck, title: 'Free Shipping', desc: 'On orders over ₹5000' },
   { icon: HiShieldCheck, title: 'Secure Payment', desc: '100% protected' },
   { icon: HiCreditCard, title: 'Easy Returns', desc: '30-day return policy' },
   { icon: HiSparkles, title: 'Best Quality', desc: 'Premium products' },
@@ -86,7 +86,7 @@ export default function Home() {
               className="mt-6 text-lg text-blue-100 max-w-lg"
             >
               Shop the latest trends with premium quality products. Free
-              shipping on orders over $50.
+              shipping on orders over ₹5000.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

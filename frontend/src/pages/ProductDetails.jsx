@@ -149,7 +149,7 @@ export default function ProductDetails() {
               </span>
             </div>
             <p className="text-3xl font-bold text-primary-600 dark:text-primary-400 mt-4">
-              ${product.price.toFixed(2)}
+              ₹{product.price.toFixed(2)}
             </p>
             <p className="text-gray-600 dark:text-gray-400 mt-4 leading-relaxed">
               {product.description}

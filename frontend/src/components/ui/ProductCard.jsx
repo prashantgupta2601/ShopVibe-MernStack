@@ -73,7 +73,7 @@ export default function ProductCard({
         </div>
         <div className="flex items-center justify-between mt-3">
           <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
-            ${product.price.toFixed(2)}
+            ₹{product.price.toFixed(2)}
           </span>
           <div className="flex items-center space-x-2">
             {onToggleWishlist && (

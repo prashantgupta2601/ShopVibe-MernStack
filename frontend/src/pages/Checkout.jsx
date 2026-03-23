@@ -139,7 +139,7 @@ export default function Checkout() {
                       {item.name} x{item.quantity}
                     </span>
                     <span>
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 ))}
@@ -147,17 +147,17 @@ export default function Checkout() {
               <hr className="border-gray-200 dark:border-gray-700 mb-3" />
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>₹{cartTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm mt-1">
                 <span className="text-gray-500">Shipping</span>
-                <span>{cartTotal >= 50 ? 'Free' : '$9.99'}</span>
+                <span>{cartTotal >= 5000 ? 'Free' : '₹99.00'}</span>
               </div>
               <hr className="border-gray-200 dark:border-gray-700 my-3" />
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
                 <span>
-                  ${(cartTotal + (cartTotal >= 50 ? 0 : 9.99)).toFixed(2)}
+                  ₹{(cartTotal + (cartTotal >= 5000 ? 0 : 99)).toFixed(2)}
                 </span>
               </div>
               <motion.button
