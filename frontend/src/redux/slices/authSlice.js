@@ -11,7 +11,8 @@ export const login = createAsyncThunk(
       localStorage.setItem('token', response.data.token);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message);
+      const message = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || error.message;
+      return rejectWithValue(message);
     }
   }
 );
@@ -24,7 +25,8 @@ export const register = createAsyncThunk(
       localStorage.setItem('token', response.data.token);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message);
+      const message = error.response?.data?.message || error.response?.data?.errors?.[0]?.msg || error.message;
+      return rejectWithValue(message);
     }
   }
 );
@@ -40,6 +42,24 @@ export const getProfile = createAsyncThunk(
         },
       };
       const response = await axios.get(`${API_URL}/profile`, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const toggleWishlist = createAsyncThunk(
+  'auth/toggleWishlist',
+  async (productId, { rejectWithValue, getState }) => {
+    try {
+      const token = getState().auth.token || localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post(`${API_URL}/wishlist`, { productId }, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
@@ -103,6 +123,11 @@ const authSlice = createSlice({
       .addCase(getProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(toggleWishlist.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.wishlist = action.payload;
+        }
       });
   },
 });

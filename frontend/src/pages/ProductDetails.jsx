@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { HiStar, HiOutlineHeart, HiMinus, HiPlus } from 'react-icons/hi';
+import { HiStar, HiOutlineHeart, HiHeart, HiMinus, HiPlus } from 'react-icons/hi';
 import { toast } from 'react-toastify';
 import api from '../services/api';
 import { fetchProductDetails } from '../redux/slices/productSlice';
 import { addToCart } from '../redux/slices/cartSlice';
+import { toggleWishlist } from '../redux/slices/authSlice';
 import { DetailSkeleton } from '../components/ui/LoadingSkeleton';
 import AnimatedPage from '../components/AnimatedPage';
 
@@ -37,6 +38,36 @@ export default function ProductDetails() {
       setReviewData({ rating: 5, comment: '' });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Error adding review');
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast.error('Please login to add items to cart');
+      return;
+    }
+    try {
+      await dispatch(addToCart({ productId: product._id, quantity })).unwrap();
+      toast.success('Added to cart successfully!');
+    } catch (err) {
+      toast.error(err || 'Failed to add to cart');
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    if (!user) {
+      toast.error('Please login to use the wishlist');
+      return;
+    }
+    try {
+      await dispatch(toggleWishlist(product._id)).unwrap();
+      if (user?.wishlist?.includes(product._id)) {
+        toast.info('Removed from wishlist');
+      } else {
+        toast.success('Added to wishlist!');
+      }
+    } catch (err) {
+      toast.error(err || 'Failed to update wishlist');
     }
   };
 
@@ -155,7 +186,7 @@ export default function ProductDetails() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => dispatch(addToCart({ productId: product._id, quantity }))}
+                onClick={handleAddToCart}
                 disabled={product.stock === 0}
                 className="btn-primary flex-grow disabled:opacity-50"
               >
@@ -164,9 +195,10 @@ export default function ProductDetails() {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="p-3 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={handleToggleWishlist}
+                className={`p-3 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 ${user?.wishlist?.includes(product._id) ? 'text-red-500' : ''}`}
               >
-                <HiOutlineHeart className="w-6 h-6" />
+                {user?.wishlist?.includes(product._id) ? <HiHeart className="w-6 h-6" /> : <HiOutlineHeart className="w-6 h-6" />}
               </motion.button>
             </div>
           </motion.div>
